@@ -9,9 +9,6 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE, cache = TRUE)
 ```
 
-**Note:** in the `bench::mark()` outputs, the most relevant metric to look at is
-the median time (thrid column).
-
 ## Multiplications are computationally costly
 
 Avoid them as much as possible by using intermediate variables. Example:
