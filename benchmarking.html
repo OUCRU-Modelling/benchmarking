@@ -394,8 +394,53 @@ bench::mark(
 <pre><code>## # A tibble: 2 × 6
 ##   expression                             min median `itr/sec` mem_alloc `gc/sec`
 ##   &lt;bch:expr&gt;                          &lt;bch:&gt; &lt;bch:&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
-## 1 ode(y = initial_values, times = ti…   11ms 14.8ms      61.0     704KB    12.2 
-## 2 ode(y = initial_values, times = ti… 11.1ms 13.6ms      42.7    95.9KB     9.50</code></pre>
+## 1 ode(y = initial_values, times = ti… 10.9ms 11.7ms      75.6     704KB     18.0
+## 2 ode(y = initial_values, times = ti… 11.4ms 15.5ms      55.4    95.9KB     15.8</code></pre>
+</div>
+<div id="return" class="section level2">
+<h2><code>return()</code></h2>
+<p>Function calls are computationally expensive. Do not use any that is
+not necessary, for example <code>return()</code> at the end of a
+function:</p>
+<pre class="r"><code>library(deSolve)
+
+# without return():
+sir_equations1 &lt;- function(time, variables, parameters) {
+  with(as.list(c(variables, parameters)), {
+    incidence &lt;- beta * I * S
+    recovery  &lt;- gamma * I
+    dS &lt;- -incidence
+    dI &lt;-  incidence - recovery
+    dR &lt;-  recovery
+    list(c(dS, dI, dR))
+  })
+}
+
+# with return():
+sir_equations2 &lt;- function(time, variables, parameters) {
+  with(as.list(c(variables, parameters)), {
+    incidence &lt;- beta * I * S
+    recovery  &lt;- gamma * I
+    dS &lt;- -incidence
+    dI &lt;-  incidence - recovery
+    dR &lt;-  recovery
+    return(list(c(dS, dI, dR)))
+  })
+}
+
+initial_values &lt;- c(S = 999, I = 1, R = 0)
+time_values &lt;- seq(0, 30, .1)
+parameters_values &lt;- c(beta = .004, gamma = .5)
+
+bench::mark(
+  ode(y = initial_values, times = time_values, func = sir_equations1, parms = parameters_values),
+  ode(y = initial_values, times = time_values, func = sir_equations2, parms = parameters_values)
+)</code></pre>
+<pre><code>## # A tibble: 2 × 6
+##   expression                             min median `itr/sec` mem_alloc `gc/sec`
+##   &lt;bch:expr&gt;                          &lt;bch:&gt; &lt;bch:&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
+## 1 ode(y = initial_values, times = ti… 11.2ms 13.1ms      73.6    85.1KB    19.1 
+## 2 ode(y = initial_values, times = ti… 12.6ms 17.5ms      35.3      88KB     9.42</code></pre>
 </div>
 
 

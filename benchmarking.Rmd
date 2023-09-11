@@ -4,7 +4,7 @@ output: html_document
 ---
 
 ```{r setup, include = FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE)
 ```
 
 **Note:** in the `bench::mark()` outputs, the most relevant metric to look at is
@@ -49,4 +49,45 @@ bench::mark(
 )
 ```
 
+## `return()`
+
+Function calls are computationally expensive. Do not use any that is not
+necessary, for example `return()` at the end of a function:
+
+```{r}
+library(deSolve)
+
+# without return():
+sir_equations1 <- function(time, variables, parameters) {
+  with(as.list(c(variables, parameters)), {
+    incidence <- beta * I * S
+    recovery  <- gamma * I
+    dS <- -incidence
+    dI <-  incidence - recovery
+    dR <-  recovery
+    list(c(dS, dI, dR))
+  })
+}
+
+# with return():
+sir_equations2 <- function(time, variables, parameters) {
+  with(as.list(c(variables, parameters)), {
+    incidence <- beta * I * S
+    recovery  <- gamma * I
+    dS <- -incidence
+    dI <-  incidence - recovery
+    dR <-  recovery
+    return(list(c(dS, dI, dR)))
+  })
+}
+
+initial_values <- c(S = 999, I = 1, R = 0)
+time_values <- seq(0, 30, .1)
+parameters_values <- c(beta = .004, gamma = .5)
+
+bench::mark(
+  ode(y = initial_values, times = time_values, func = sir_equations1, parms = parameters_values),
+  ode(y = initial_values, times = time_values, func = sir_equations2, parms = parameters_values)
+)
+```
 
