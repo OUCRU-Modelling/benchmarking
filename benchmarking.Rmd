@@ -43,8 +43,10 @@ time_values <- seq(0, 30, .1)
 parameters_values <- c(beta = .004, gamma = .5)
 
 bench::mark(
-  ode(y = initial_values, times = time_values, func = sir_equations1, parms = parameters_values),
-  ode(y = initial_values, times = time_values, func = sir_equations2, parms = parameters_values)
+  three_multiplications = 
+    ode(y = initial_values, times = time_values, func = sir_equations1, parms = parameters_values),
+  six_multiplications = 
+    ode(y = initial_values, times = time_values, func = sir_equations2, parms = parameters_values)
 )
 ```
 
@@ -85,8 +87,10 @@ time_values <- seq(0, 30, .1)
 parameters_values <- c(beta = .004, gamma = .5)
 
 bench::mark(
-  ode(y = initial_values, times = time_values, func = sir_equations1, parms = parameters_values),
-  ode(y = initial_values, times = time_values, func = sir_equations2, parms = parameters_values)
+  without_return = 
+    ode(y = initial_values, times = time_values, func = sir_equations1, parms = parameters_values),
+  with_return = 
+    ode(y = initial_values, times = time_values, func = sir_equations2, parms = parameters_values)
 )
 ```
 
@@ -99,8 +103,8 @@ some of these funtions from scractch, without the internal checks:
 ```{r}
 x <- runif(1000)
 bench::mark(
-  sum(x) / length(x),
-  mean(x)
+  from_scratch = sum(x) / length(x),
+  built_in = mean(x)
 )
 ```
 

@@ -386,14 +386,16 @@ time_values &lt;- seq(0, 30, .1)
 parameters_values &lt;- c(beta = .004, gamma = .5)
 
 bench::mark(
-  ode(y = initial_values, times = time_values, func = sir_equations1, parms = parameters_values),
-  ode(y = initial_values, times = time_values, func = sir_equations2, parms = parameters_values)
+  three_multiplications = 
+    ode(y = initial_values, times = time_values, func = sir_equations1, parms = parameters_values),
+  six_multiplications = 
+    ode(y = initial_values, times = time_values, func = sir_equations2, parms = parameters_values)
 )</code></pre>
 <pre><code>## # A tibble: 2 × 6
-##   expression                             min median `itr/sec` mem_alloc `gc/sec`
-##   &lt;bch:expr&gt;                          &lt;bch:&gt; &lt;bch:&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
-## 1 ode(y = initial_values, times = ti… 10.9ms 11.7ms      75.6     704KB     18.0
-## 2 ode(y = initial_values, times = ti… 11.4ms 15.5ms      55.4    95.9KB     15.8</code></pre>
+##   expression                 min   median `itr/sec` mem_alloc `gc/sec`
+##   &lt;bch:expr&gt;            &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
+## 1 three_multiplications   7.04ms   7.16ms      139.   703.9KB     33.5
+## 2 six_multiplications     7.11ms   7.28ms      136.    95.9KB     33.2</code></pre>
 </div>
 <div id="return" class="section level2">
 <h2><code>return()</code></h2>
@@ -431,14 +433,16 @@ time_values &lt;- seq(0, 30, .1)
 parameters_values &lt;- c(beta = .004, gamma = .5)
 
 bench::mark(
-  ode(y = initial_values, times = time_values, func = sir_equations1, parms = parameters_values),
-  ode(y = initial_values, times = time_values, func = sir_equations2, parms = parameters_values)
+  without_return = 
+    ode(y = initial_values, times = time_values, func = sir_equations1, parms = parameters_values),
+  with_return = 
+    ode(y = initial_values, times = time_values, func = sir_equations2, parms = parameters_values)
 )</code></pre>
 <pre><code>## # A tibble: 2 × 6
-##   expression                             min median `itr/sec` mem_alloc `gc/sec`
-##   &lt;bch:expr&gt;                          &lt;bch:&gt; &lt;bch:&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
-## 1 ode(y = initial_values, times = ti… 11.2ms 13.1ms      73.6    85.1KB    19.1 
-## 2 ode(y = initial_values, times = ti… 12.6ms 17.5ms      35.3      88KB     9.42</code></pre>
+##   expression          min   median `itr/sec` mem_alloc `gc/sec`
+##   &lt;bch:expr&gt;     &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
+## 1 without_return   7.09ms   7.47ms      132.    85.1KB     35.0
+## 2 with_return      7.79ms   7.97ms      125.      88KB     34.4</code></pre>
 </div>
 <div id="rewriting-built-in-functions" class="section level2">
 <h2>Rewriting built-in functions</h2>
@@ -448,14 +452,14 @@ better off rewriting some of these funtions from scractch, without the
 internal checks:</p>
 <pre class="r"><code>x &lt;- runif(1000)
 bench::mark(
-  sum(x) / length(x),
-  mean(x)
+  from_scratch = sum(x) / length(x),
+  built_in = mean(x)
 )</code></pre>
 <pre><code>## # A tibble: 2 × 6
-##   expression            min   median `itr/sec` mem_alloc `gc/sec`
-##   &lt;bch:expr&gt;       &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
-## 1 sum(x)/length(x)   3.53µs   3.73µs   222156.        0B      0  
-## 2 mean(x)            7.35µs   7.84µs   116010.    23.3KB     11.6</code></pre>
+##   expression        min   median `itr/sec` mem_alloc `gc/sec`
+##   &lt;bch:expr&gt;   &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
+## 1 from_scratch    1.7µs    1.8µs   542123.        0B      0  
+## 2 built_in        5.6µs      6µs   161087.        0B     16.1</code></pre>
 </div>
 
 
