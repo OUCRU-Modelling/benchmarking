@@ -353,8 +353,6 @@ display: none;
 </div>
 
 
-<p><strong>Note:</strong> in the <code>bench::mark()</code> outputs, the
-most relevant metric to look at is the median time (thrid column).</p>
 <div id="multiplications-are-computationally-costly" class="section level2">
 <h2>Multiplications are computationally costly</h2>
 <p>Avoid them as much as possible by using intermediate variables.
@@ -441,6 +439,23 @@ bench::mark(
 ##   &lt;bch:expr&gt;                          &lt;bch:&gt; &lt;bch:&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
 ## 1 ode(y = initial_values, times = ti… 11.2ms 13.1ms      73.6    85.1KB    19.1 
 ## 2 ode(y = initial_values, times = ti… 12.6ms 17.5ms      35.3      88KB     9.42</code></pre>
+</div>
+<div id="rewriting-built-in-functions" class="section level2">
+<h2>Rewriting built-in functions</h2>
+<p>Built-in functions comes with a number of internal checks that are
+useful for interactive use. But if you know what you’re doing, you are
+better off rewriting some of these funtions from scractch, without the
+internal checks:</p>
+<pre class="r"><code>x &lt;- runif(1000)
+bench::mark(
+  sum(x) / length(x),
+  mean(x)
+)</code></pre>
+<pre><code>## # A tibble: 2 × 6
+##   expression            min   median `itr/sec` mem_alloc `gc/sec`
+##   &lt;bch:expr&gt;       &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
+## 1 sum(x)/length(x)   3.53µs   3.73µs   222156.        0B      0  
+## 2 mean(x)            7.35µs   7.84µs   116010.    23.3KB     11.6</code></pre>
 </div>
 
 

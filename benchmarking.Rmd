@@ -90,4 +90,17 @@ bench::mark(
 )
 ```
 
-i
+## Rewriting built-in functions
+
+Built-in functions comes with a number of internal checks that are useful for
+interactive use. But if you know what you're doing, you are better off rewriting
+some of these funtions from scractch, without the internal checks:
+
+```{r}
+x <- runif(1000)
+bench::mark(
+  sum(x) / length(x),
+  mean(x)
+)
+```
+
