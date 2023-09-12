@@ -108,3 +108,15 @@ bench::mark(
 )
 ```
 
+## Sequence generation
+
+If you're generating a sequence with a step of 1, there are multiple ways to do so:
+
+```{r}
+bench::mark(
+  seq.int(0, 1000000),
+  seq(0, 1000000),
+  0:1000000
+)
+```
+
