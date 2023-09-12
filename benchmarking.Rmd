@@ -120,3 +120,27 @@ bench::mark(
 )
 ```
 
+## Polynomial functions
+
+What is a good and efficient way to create a polynomial function that gives Y from X, given known coefficients? The idea stems from trying to reproduce the temperature-dependent oviposition rate per female mosquito from a table of polynomial coefficients, from [this paper](https://www.sciencedirect.com/science/article/pii/S0307904X22005054#sec0006).
+
+```{r}
+coefs <- c(-1.51e-4, 1.02e-2, -2.12e01, 1.80, -5.40)
+
+f1 <- function(x, coefs) {
+  degrees <- length(coefs) - 1
+  powers <- outer(x, seq(degrees, 0), "^")
+  multiplied <- t(apply(powers, 1, \(x) x * coefs))
+  apply(multiplied, 1, sum)
+}
+
+f2 <- function(x, coefs) {
+  powers <- (length(coefs) - 1):0
+  sapply(x, \(y) sum(coefs * y^powers))
+}
+
+bench::mark(
+  f1(22, coefs),
+  f2(22, coefs)
+)
+```
