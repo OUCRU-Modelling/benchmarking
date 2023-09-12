@@ -363,10 +363,10 @@ Example:</p>
 sir_equations1 &lt;- function(time, variables, parameters) {
   with(as.list(c(variables, parameters)), {
     incidence &lt;- beta * I * S
-    recovery  &lt;- gamma * I
+    recovery &lt;- gamma * I
     dS &lt;- -incidence
-    dI &lt;-  incidence - recovery
-    dR &lt;-  recovery
+    dI &lt;- incidence - recovery
+    dR &lt;- recovery
     list(c(dS, dI, dR))
   })
 }
@@ -375,8 +375,8 @@ sir_equations1 &lt;- function(time, variables, parameters) {
 sir_equations2 &lt;- function(time, variables, parameters) {
   with(as.list(c(variables, parameters)), {
     dS &lt;- -beta * I * S
-    dI &lt;-  beta * I * S - gamma * I
-    dR &lt;-  gamma * I
+    dI &lt;- beta * I * S - gamma * I
+    dR &lt;- gamma * I
     list(c(dS, dI, dR))
   })
 }
@@ -386,16 +386,16 @@ time_values &lt;- seq(0, 30, .1)
 parameters_values &lt;- c(beta = .004, gamma = .5)
 
 bench::mark(
-  three_multiplications = 
+  three_multiplications =
     ode(y = initial_values, times = time_values, func = sir_equations1, parms = parameters_values),
-  six_multiplications = 
+  six_multiplications =
     ode(y = initial_values, times = time_values, func = sir_equations2, parms = parameters_values)
 )</code></pre>
 <pre><code>## # A tibble: 2 × 6
 ##   expression                 min   median `itr/sec` mem_alloc `gc/sec`
 ##   &lt;bch:expr&gt;            &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
-## 1 three_multiplications   7.04ms   7.16ms      139.   703.9KB     33.5
-## 2 six_multiplications     7.11ms   7.28ms      136.    95.9KB     33.2</code></pre>
+## 1 three_multiplications    9.6ms   9.78ms     102.     4.63MB     23.5
+## 2 six_multiplications     9.94ms  10.09ms      98.4   95.94KB     31.8</code></pre>
 </div>
 <div id="return" class="section level2">
 <h2><code>return()</code></h2>
@@ -408,10 +408,10 @@ function:</p>
 sir_equations1 &lt;- function(time, variables, parameters) {
   with(as.list(c(variables, parameters)), {
     incidence &lt;- beta * I * S
-    recovery  &lt;- gamma * I
+    recovery &lt;- gamma * I
     dS &lt;- -incidence
-    dI &lt;-  incidence - recovery
-    dR &lt;-  recovery
+    dI &lt;- incidence - recovery
+    dR &lt;- recovery
     list(c(dS, dI, dR))
   })
 }
@@ -420,10 +420,10 @@ sir_equations1 &lt;- function(time, variables, parameters) {
 sir_equations2 &lt;- function(time, variables, parameters) {
   with(as.list(c(variables, parameters)), {
     incidence &lt;- beta * I * S
-    recovery  &lt;- gamma * I
+    recovery &lt;- gamma * I
     dS &lt;- -incidence
-    dI &lt;-  incidence - recovery
-    dR &lt;-  recovery
+    dI &lt;- incidence - recovery
+    dR &lt;- recovery
     return(list(c(dS, dI, dR)))
   })
 }
@@ -433,22 +433,22 @@ time_values &lt;- seq(0, 30, .1)
 parameters_values &lt;- c(beta = .004, gamma = .5)
 
 bench::mark(
-  without_return = 
+  without_return =
     ode(y = initial_values, times = time_values, func = sir_equations1, parms = parameters_values),
-  with_return = 
+  with_return =
     ode(y = initial_values, times = time_values, func = sir_equations2, parms = parameters_values)
 )</code></pre>
 <pre><code>## # A tibble: 2 × 6
 ##   expression          min   median `itr/sec` mem_alloc `gc/sec`
 ##   &lt;bch:expr&gt;     &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
-## 1 without_return   7.09ms   7.47ms      132.    85.1KB     35.0
-## 2 with_return      7.79ms   7.97ms      125.      88KB     34.4</code></pre>
+## 1 without_return   9.69ms   9.99ms      99.5    85.1KB     32.2
+## 2 with_return     10.59ms  10.88ms      91.6      88KB     32.5</code></pre>
 </div>
 <div id="rewriting-built-in-functions" class="section level2">
 <h2>Rewriting built-in functions</h2>
 <p>Built-in functions comes with a number of internal checks that are
 useful for interactive use. But if you know what you’re doing, you are
-better off rewriting some of these funtions from scractch, without the
+better off rewriting some of these functions from scratch, without the
 internal checks:</p>
 <pre class="r"><code>x &lt;- runif(1000)
 bench::mark(
@@ -458,8 +458,55 @@ bench::mark(
 <pre><code>## # A tibble: 2 × 6
 ##   expression        min   median `itr/sec` mem_alloc `gc/sec`
 ##   &lt;bch:expr&gt;   &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
-## 1 from_scratch    1.7µs    1.8µs   542123.        0B      0  
-## 2 built_in        5.6µs      6µs   161087.        0B     16.1</code></pre>
+## 1 from_scratch    1.6µs    1.7µs   547420.        0B      0  
+## 2 built_in        6.4µs    6.9µs   138351.        0B     13.8</code></pre>
+</div>
+<div id="sequence-generation" class="section level2">
+<h2>Sequence generation</h2>
+<p>If you’re generating a sequence with a step of 1, there are multiple
+ways to do so:</p>
+<pre class="r"><code>bench::mark(
+  seq.int(0, 1000000),
+  seq(0, 1000000),
+  0:1000000
+)</code></pre>
+<pre><code>## # A tibble: 3 × 6
+##   expression             min   median `itr/sec` mem_alloc `gc/sec`
+##   &lt;bch:expr&gt;        &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
+## 1 seq.int(0, 1e+06)    200ns    400ns  2123742.        0B    212. 
+## 2 seq(0, 1e+06)        4.8µs    5.5µs   169320.        0B     16.9
+## 3 0:1e+06                  0    200ns  5014718.        0B      0</code></pre>
+</div>
+<div id="polynomial-functions" class="section level2">
+<h2>Polynomial functions</h2>
+<p>What is a good and efficient way to create a polynomial function that
+gives Y from X, given known coefficients? The idea stems from trying to
+reproduce the temperature-dependent oviposition rate per female mosquito
+from a table of polynomial coefficients, from <a href="https://www.sciencedirect.com/science/article/pii/S0307904X22005054#sec0006">this
+paper</a>.</p>
+<pre class="r"><code>coefs &lt;- c(-1.51e-4, 1.02e-2, -2.12e01, 1.80, -5.40)
+
+f1 &lt;- function(x, coefs) {
+  degrees &lt;- length(coefs) - 1
+  powers &lt;- outer(x, seq(degrees, 0), &quot;^&quot;)
+  multiplied &lt;- t(apply(powers, 1, \(x) x * coefs))
+  apply(multiplied, 1, sum)
+}
+
+f2 &lt;- function(x, coefs) {
+  powers &lt;- (length(coefs) - 1):0
+  sapply(x, \(y) sum(coefs * y^powers))
+}
+
+bench::mark(
+  f1(22, coefs),
+  f2(22, coefs)
+)</code></pre>
+<pre><code>## # A tibble: 2 × 6
+##   expression         min   median `itr/sec` mem_alloc `gc/sec`
+##   &lt;bch:expr&gt;    &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
+## 1 f1(22, coefs)   61.4µs   66.5µs    14154.    50.4KB     24.0
+## 2 f2(22, coefs)   14.6µs   16.2µs    56865.        0B     28.4</code></pre>
 </div>
 
 
