@@ -119,6 +119,30 @@ bench::mark(
 )
 ```
 
+How does this perform at different sizes (looking at `total_time`):
+
+```{r}
+purrr::map(
+  10^(0:7),
+  function(n) {
+    bench::mark(
+      seq.int(0, n),
+      seq(0, n),
+      0:n
+    ) %>%
+      select(expression, total_time) %>%
+      mutate(across(-expression, as.double)) %>%
+      mutate(expression = as.character(expression)) %>%
+      mutate(n = n)
+  }
+) %>%
+  purrr::list_rbind() %>%
+  ggplot() +
+  geom_line(aes(x = log10(n), y = total_time, group = expression, color = expression)) +
+  scale_x_continuous("Size (log 10)", breaks = 0:7)
+```
+
+
 ## Polynomial functions
 
 What is a good and efficient way to create a polynomial function that gives Y from X, given known coefficients? The idea stems from trying to reproduce the temperature-dependent oviposition rate per female mosquito from a table of polynomial coefficients, from [this paper](https://www.sciencedirect.com/science/article/pii/S0307904X22005054#sec0006).
