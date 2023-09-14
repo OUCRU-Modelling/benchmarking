@@ -6,6 +6,9 @@ editor_options:
 ---
 
 ```{r setup, include = FALSE}
+library(tidyverse)
+library(deSolve)
+
 knitr::opts_chunk$set(echo = TRUE, cache = TRUE)
 ```
 
@@ -14,8 +17,6 @@ knitr::opts_chunk$set(echo = TRUE, cache = TRUE)
 Avoid them as much as possible by using intermediate variables. Example:
 
 ```{r}
-library(deSolve)
-
 # 3 multiplications:
 sir_equations1 <- function(time, variables, parameters) {
   with(as.list(c(variables, parameters)), {
@@ -56,8 +57,6 @@ Function calls are computationally expensive. Do not use any that is not
 necessary, for example `return()` at the end of a function:
 
 ```{r}
-library(deSolve)
-
 # without return():
 sir_equations1 <- function(time, variables, parameters) {
   with(as.list(c(variables, parameters)), {
