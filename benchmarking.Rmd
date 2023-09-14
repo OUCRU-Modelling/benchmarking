@@ -167,3 +167,17 @@ bench::mark(
   f2(22, coefs)
 )
 ```
+
+## Access dataframe/tibble column
+
+Many ways to access column values in a dataframe/tibble (result must be a vector):
+
+```{r}
+df <- tibble(a = 1:1000, b = 1:1000)
+
+bench::mark(
+  df$a,
+  pull(df, a),
+  df[["a"]],
+)
+```
